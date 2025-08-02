@@ -85,6 +85,45 @@
   - Verify NVIDIA Container Toolkit: `docker run --rm --gpus all nvidia/cuda:12.2.0-base-ubuntu22.04 nvidia-smi`.
   - Restart Docker: `sudo systemctl restart docker`.
 
+## Docker Update Issues
+- **Kokoro Fast API or Wyoming OpenAI not using the latest image**:
+  - **Cause**: Docker caches images and doesn’t pull the latest `:latest` tag automatically on reboot.
+  - **Solution**: Use the update script:
+    ```bash
+    bash scripts/update-services.sh
+    ```
+    Or manually update:
+    - For Kokoro Fast API:
+      ```bash
+      docker pull ghcr.io/remsky/kokoro-fastapi-gpu:latest
+      docker stop kokoro-fastapi
+      docker rm kokoro-fastapi
+      sudo docker run -d --gpus all -p 8880:8880 --name kokoro-fastapi --restart unless-stopped ghcr.io/remsky/kokoro-fastapi-gpu:latest
+      ```
+    - For Wyoming OpenAI:
+      ```bash
+      cd ~/wyoming_openai
+      git pull origin main
+      docker pull ghcr.io/roryeckel/wyoming_openai:latest
+      sudo docker compose -f docker-compose.fastapi-kokoro.yml down
+      sudo docker compose -f docker-compose.fastapi-kokoro.yml up -d
+      ```
+    Verify containers are running:
+    ```bash
+    docker ps
+    ```
+- **Wyoming OpenAI repository outdated**:
+  - **Cause**: The cloned `wyoming_openai` repository may not have the latest configuration files.
+  - **Solution**: Update the repository:
+    ```bash
+    cd ~/wyoming_openai
+    git pull origin main
+    ```
+    Then restart the service:
+    ```bash
+    sudo docker compose -f docker-compose.fastapi-kokoro.yml down
+    sudo docker compose -f docker-compose.fastapi-kokoro.yml up -d
+    ```
 ## Sudo Issues
 - **Error: User is not in sudoers file**:
   - Log in as root or another admin user and add the `ubuntu` user to the `sudo` group:
