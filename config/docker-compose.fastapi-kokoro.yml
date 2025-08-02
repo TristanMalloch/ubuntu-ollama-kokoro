@@ -9,6 +9,6 @@ services:
       WYOMING_URI: tcp://0.0.0.0:10300
       WYOMING_LOG_LEVEL: INFO
       WYOMING_LANGUAGES: en
-      TTS_OPENAI_URL: http://192.168.50.136:8880/v1/audio/speech
+      TTS_OPENAI_URL: ${TTS_OPENAI_URL:-http://192.168.50.1:8880/v1/audio/speech}
       TTS_MODELS: kokoro
     restart: unless-stopped
