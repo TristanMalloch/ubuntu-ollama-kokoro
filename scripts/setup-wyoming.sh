@@ -33,7 +33,7 @@ echo "Starting Wyoming OpenAI..."
 sudo docker compose -f docker-compose.fastapi-kokoro.yml down
 sudo docker compose -f docker-compose.fastapi-kokoro.yml up -d
 
-# Verify service is running
+# Verify container is running
 if docker ps | grep wyoming_openai; then
   echo "Wyoming OpenAI is running."
 else
