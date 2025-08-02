@@ -1,0 +1,11 @@
+# Ignore temporary files
+*.bak
+*.log
+*.tmp
+
+# Ignore downloaded installers
+*.run
+get-docker.sh
+
+# Ignore local working directories
+wyoming_openai/
