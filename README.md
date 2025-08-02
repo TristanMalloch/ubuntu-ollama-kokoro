@@ -53,6 +53,8 @@ Run all commands as the `ubuntu` user via SSH. You may be prompted for your `sud
      ```
 
 **Notes**:
+- **Automatic Startup**: The Ollama service (`install-ollama.sh`), Kokoro Fast API (`setup-kokoro.sh`), and Wyoming OpenAI (`setup-wyoming.sh`) are configured to start automatically on system reboot. Ollama uses a systemd service, while Docker containers use the `--restart unless-stopped` policy.
+
 - **Docker Group Membership**: After running `install-docker.sh`, log out and back in to apply the `docker` group membership, or run `newgrp docker` in the same session to avoid using `sudo` for Docker commands.
 - **Sudo Prompts**: To minimize `sudo` password prompts, run `sudo -v` before executing scripts to cache credentials.
 - **IP Configuration**: The `setup-wyoming.sh` script automatically sets `TTS_OPENAI_URL` in [`config/docker-compose.fastapi-kokoro.yml`](./config/docker-compose.fastapi-kokoro.yml) to your VM’s IP (detected via `hostname -I`). If this fails or you use a different IP, manually set the environment variable before running `setup-wyoming.sh`:
