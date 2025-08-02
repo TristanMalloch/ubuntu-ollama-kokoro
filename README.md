@@ -26,3 +26,33 @@ Run all commands as the `ubuntu` user via SSH. You may be prompted for your `sud
 2. **Install NVIDIA Driver**:
    ```bash
    bash scripts/install-nvidia-driver.sh
+3. **Install and configure Ollama**:
+   ```bash
+   bash scripts/install-ollama.sh
+4. **Install Docker with NVIDIA Support**:
+   ```bash
+   bash scripts/install-docker.sh
+5. **Run Kokoro Fast API**:
+   ```bash
+   bash scripts/setup-kokoro.sh
+2. **(Optional) Set Up Wyoming OpenAI**:
+   ```bash
+   bash scripts/setup-wyoming.sh
+
+**Note:** After running install-docker.sh, log out and back in to apply the docker group membership, or run newgrp docker to avoid using sudo for Docker commands. If you want to run scripts without repeated sudo prompts, run sudo -v first to cache credentials.IP Configuration: Update TTS_OPENAI_URL in config/docker-compose.fastapi-kokoro.yml to your VM’s IP (default: 192.168.50.136), or rely on setup-wyoming.sh to set it automatically.
+
+## Configuration Files
+
+- config/ollama.service: Custom systemd service for Ollama.
+- config/docker-compose.fastapi-kokoro.yml: Docker Compose for Wyoming OpenAI.
+
+## Troubleshooting
+See docs/troubleshooting.md for common issues and solutions.
+
+## Contributing
+
+Contributions are welcome! Please submit issues or pull requests.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
