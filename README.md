@@ -31,19 +31,26 @@ Run all commands as the `ubuntu` user via SSH. You may be prompted for your `sud
      bash scripts/install-nvidia-driver.sh
      ```
    - This script installs NVIDIA driver 570.172.08 with CUDA 12.8.
-
-3. **Install and configure Ollama**:
-   ```bash
-   bash scripts/install-ollama.sh
+3. **Install or Update and Configure Ollama**:
+   - Run:
+     ```bash
+     bash scripts/install-ollama.sh
+     ```
+   - This script installs Ollama if not present or updates it to the latest version and configures it for network access.
 4. **Install Docker with NVIDIA Support**:
    ```bash
    bash scripts/install-docker.sh
 5. **Run Kokoro Fast API**:
    ```bash
    bash scripts/setup-kokoro.sh
-2. **(Optional) Set Up Wyoming OpenAI**:
+6. **(Optional) Set Up Wyoming OpenAI**:
    ```bash
    bash scripts/setup-wyoming.sh
+7. **One-Command Setup (Optional)**:
+   - To run all steps in sequence:
+     ```bash
+     bash scripts/setup.sh
+     ```
 
 **Notes**:
 - **Docker Group Membership**: After running `install-docker.sh`, log out and back in to apply the `docker` group membership, or run `newgrp docker` in the same session to avoid using `sudo` for Docker commands.
