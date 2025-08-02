@@ -14,7 +14,7 @@ BACKUP_FILE="/etc/systemd/system/ollama.service.bak"
 # Check if Ollama is already installed
 if command -v ollama &> /dev/null; then
   echo "Ollama is already installed. Checking current version..."
-  ollama version
+  ollama --version
   echo "Proceeding to update Ollama to the latest version..."
 else
   echo "Ollama not found. Installing Ollama..."
@@ -33,7 +33,7 @@ curl -fsSL https://ollama.com/install.sh | sh
 # Verify installation or update
 if command -v ollama &> /dev/null; then
   echo "Ollama installation/update successful. Version:"
-  ollama version
+  ollama --version
 else
   echo "Ollama installation/update failed. Check logs or consult docs/troubleshooting.md."
   exit 1
