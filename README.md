@@ -55,7 +55,15 @@ Run all commands as the `ubuntu` user via SSH. You may be prompted for your `sud
 **Notes**:
 - **Docker Group Membership**: After running `install-docker.sh`, log out and back in to apply the `docker` group membership, or run `newgrp docker` in the same session to avoid using `sudo` for Docker commands.
 - **Sudo Prompts**: To minimize `sudo` password prompts, run `sudo -v` before executing scripts to cache credentials.
-- **IP Configuration**: Update `TTS_OPENAI_URL` in [`config/docker-compose.fastapi-kokoro.yml`](./config/docker-compose.fastapi-kokoro.yml) to your VM’s IP (default: `192.168.50.136`), or rely on `setup-wyoming.sh` to set it automatically using the VM’s primary network interface.
+- **IP Configuration**: The `setup-wyoming.sh` script automatically sets `TTS_OPENAI_URL` in [`config/docker-compose.fastapi-kokoro.yml`](./config/docker-compose.fastapi-kokoro.yml) to your VM’s IP (detected via `hostname -I`). If this fails or you use a different IP, manually set the environment variable before running `setup-wyoming.sh`:
+  ```bash
+  export TTS_OPENAI_URL="http://<YOUR_VM_IP>:8880/v1/audio/speech"
+  bash scripts/setup-wyoming.sh
+  ```
+  Alternatively, edit `config/docker-compose.fastapi-kokoro.yml` (./config/docker-compose.fastapi-kokoro.yml) to replace the default IP (192.168.50.136) with your VM’s IP, found via:
+```bash
+  hostname -I
+```
 - **Backup**: Before running scripts, create a Proxmox snapshot of your VM to revert if issues occur.
 - **Firewall Configuration**: Allow necessary ports for external access:
   ```bash
