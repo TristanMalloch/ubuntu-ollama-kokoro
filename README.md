@@ -74,6 +74,32 @@ Run all commands as the `ubuntu` user via SSH. You may be prompted for your `sud
   sudo ufw allow 10200  # Wyoming OpenAI
   sudo ufw enable
 
+## Updating Services
+To update the Docker services (Kokoro Fast API and Wyoming OpenAI) to their latest images or update the cloned Wyoming OpenAI repository:
+
+- Run the update script:
+```bash
+bash scripts/update-services.sh
+```
+- This script updates the kokoro-fastapi-gpu:latest and wyoming_openai:latest images and refreshes the wyoming_openai repository with git pull.
+
+- Alternatively, manually update:
+  - **Kokoro Fast API**:
+    ```bash
+    docker pull ghcr.io/remsky/kokoro-fastapi-gpu:latest
+    docker stop kokoro-fastapi
+    docker rm kokoro-fastapi
+    sudo docker run -d --gpus all -p 8880:8880 --name kokoro-fastapi --restart unless-stopped ghcr.io/remsky/kokoro-fastapi-gpu:latest
+    ```
+  - **Wyoming OpenAI**:
+    ```bash
+    cd ~/wyoming_openai
+    git pull origin main
+    docker pull ghcr.io/roryeckel/wyoming_openai:latest
+    sudo docker compose -f docker-compose.fastapi-kokoro.yml down
+    sudo docker compose -f docker-compose.fastapi-kokoro.yml up -d
+    ```
+
 ## Configuration Files
 
 - `config/ollama.service` (./config/ollama.service): Custom systemd service for Ollama.
