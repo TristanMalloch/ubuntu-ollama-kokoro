@@ -51,8 +51,34 @@
 
 ## Ollama Issues
 - **Ollama not accessible over network**:
-  - Verify `OLLAMA_HOST=0.0.0.0` in `config/ollama.service`.
-  - Check firewall: `sudo ufw allow 11434`.
+  - Verify `OLLAMA_HOST=0.0.0.0` in [`config/ollama.service`](../config/ollama.service).
+  - Check firewall:
+    ```bash
+    sudo ufw allow 11434
+    ```
+- **Ollama version outdated**:
+  - **Cause**: An older version of Ollama may cause compatibility issues.
+  - **Solution**: Re-run the installation script to update to the latest version:
+    ```bash
+    bash scripts/install-ollama.sh
+    ```
+    Verify the version:
+    ```bash
+    ollama version
+    ```
+- **Ollama service not running**:
+  - Check service status:
+    ```bash
+    systemctl status ollama
+    ```
+  - Restart the service:
+    ```bash
+    sudo systemctl restart ollama
+    ```
+  - Re-run the script if needed:
+    ```bash
+    bash scripts/install-ollama.sh
+    ```
 
 ## Docker Issues
 - **NVIDIA Docker not working**:
