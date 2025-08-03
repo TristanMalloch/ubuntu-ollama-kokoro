@@ -74,6 +74,114 @@ Run all commands as the `ubuntu` user via SSH. You may be prompted for your `sud
   sudo ufw allow 10200  # Wyoming OpenAI
   sudo ufw enable
 
+## Manual Installation
+
+If you prefer not to use the provided scripts, you can manually install and configure the components with the following commands. Run these as the `ubuntu` user with `sudo` privileges on an Ubuntu Server VM.
+
+1. **Install NVIDIA Drivers and CUDA 12.8**:
+```bash
+  sudo apt update
+  sudo apt install -y ubuntu-drivers-common
+  sudo ubuntu-drivers autoinstall
+  sudo apt install -y nvidia-driver-550 nvidia-utils-550 nvidia-cuda-toolkit
+```
+  Verify installation:
+```bash
+  nvidia-smi
+  nvcc --version  # Should show CUDA 12.8
+```
+  If Secure Boot is enabled, sign the NVIDIA kernel module:
+```bash
+  sudo mokutil --import /root/MOK.der
+```
+  Reboot and enroll the key in the MOK prompt.
+
+2. **Install Ollama**:
+```bash
+curl -fsSL https://ollama.com/install.sh | sh
+sudo systemctl stop ollama
+sudo tee /etc/systemd/system/ollama.service > /dev/null << EOL
+[Unit]
+Description=Ollama Service
+After=network-online.target
+
+[Service]
+ExecStart=/usr/local/bin/ollama serve
+User=ollama
+Group=ollama
+Restart=always
+RestartSec=3
+Environment="OLLAMA_HOST=0.0.0.0"
+
+[Install]
+WantedBy=default.target
+EOL
+```
+
+Verify:
+```bash
+ollama --version
+systemctl status ollama
+curl http://$(hostname -I | awk '{print $1}'):11434
+```
+3. **Install Docker**:
+```bash
+sudo apt update
+sudo apt install -y ca-certificates curl gnupg
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo usermod -aG docker $USER
+```
+  Log out and back in, or run:
+```bash
+newgrp docker
+```
+  Verify:
+```bash
+docker --version
+```
+5. **Set Up Kokoro Fast API**:
+```bash
+docker pull ghcr.io/remsky/kokoro-fastapi-gpu:latest
+docker run -d --gpus all -p 8880:8880 --name kokoro-fastapi --restart unless-stopped ghcr.io/remsky/kokoro-fastapi-gpu:latest
+```
+Verify:
+```bash
+docker ps
+curl http://$(hostname -I | awk '{print $1}'):8880/v1/audio/speech
+```
+5. **Set Up Wyoming OpenAI**:
+```bash
+ sudo apt install -y git
+   git clone https://github.com/roryeckel/wyoming_openai.git
+   cd wyoming_openai
+   export TTS_OPENAI_URL="http://$(hostname -I | awk '{print $1}'):8880/v1/audio/speech"
+   echo "version: '3.8'
+services:
+  wyoming_openai:
+    image: ghcr.io/roryeckel/wyoming_openai:latest
+    container_name: wyoming_openai
+    ports:
+      - "10200:10300"
+    environment:
+      WYOMING_URI: tcp://0.0.0.0:10300
+      WYOMING_LOG_LEVEL: INFO
+      WYOMING_LANGUAGES: en
+      TTS_OPENAI_URL: $TTS_OPENAI_URL
+      TTS_MODELS: kokoro
+    restart: unless-stopped" > docker-compose.fastapi-kokoro.yml
+   docker compose -f docker-compose.fastapi-kokoro.yml up -d
+   ```
+   Verify:
+   ```bash
+   docker ps
+   curl http://$(hostname -I | awk '{print $1}'):10200
+   ```
+
 ## Updating Services
 To update the Docker services (Kokoro Fast API and Wyoming OpenAI) to their latest images or update the cloned Wyoming OpenAI repository:
 
