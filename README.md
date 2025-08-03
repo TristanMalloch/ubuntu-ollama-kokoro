@@ -80,10 +80,9 @@ If you prefer not to use the provided scripts, you can manually install and conf
 
 1. **Install NVIDIA Drivers and CUDA 12.8**:
 ```bash
-  sudo apt update
-  sudo apt install -y ubuntu-drivers-common
-  sudo ubuntu-drivers autoinstall
-  sudo apt install -y nvidia-driver-550 nvidia-utils-550 nvidia-cuda-toolkit
+   wget https://us.download.nvidia.com/XFree86/Linux-x86_64/570.172.08/NVIDIA-Linux-x86_64-570.172.08.run
+   chmod +x NVIDIA-Linux-x86_64-570.172.08.run
+   sudo ./NVIDIA-Linux-x86_64-570.172.08.run
 ```
   Verify installation:
 ```bash
